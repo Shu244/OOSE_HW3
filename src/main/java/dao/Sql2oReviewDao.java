@@ -48,7 +48,10 @@ public class Sql2oReviewDao implements ReviewDao {
 
   @Override
   public List<Review> findByCourseId(int courseId) {
-    // TODO: Implement me!
-    return null;
+    String sql = "SELECT * FROM Reviews WHERE courseID = ?;";
+    try (Connection conn = sql2o.open()) {
+      return conn.createQuery(sql)
+              .executeAndFetch(Review.class);
+    }
   }
 }
