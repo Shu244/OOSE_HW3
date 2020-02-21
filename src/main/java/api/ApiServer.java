@@ -127,8 +127,7 @@ public final class ApiServer {
         int courseId = Integer.parseInt(ctx.pathParam("id"));
 
         if(courseId != review.getCourseId()) {
-          ctx.status(400 /*Request error*/);
-          throw new UnirestException("URL id and review are not the same.");
+          throw new NumberFormatException("Mismatched ID");
         }
 
         reviewDao.add(review);
