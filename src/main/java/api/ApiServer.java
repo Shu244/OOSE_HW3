@@ -12,6 +12,7 @@ import io.javalin.plugin.json.JavalinJson;
 import model.Course;
 import model.Review;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,14 +104,31 @@ public final class ApiServer {
   private static void getReviewsForCourse(ReviewDao reviewDao) {
     // handle HTTP Get request to retrieve all reviews for a course
     app.get("/courses/:id/reviews", ctx -> {
-      // TODO: implement me
+      try {
+        int courseId = Integer.parseInt(ctx.pathParam("id"));
+        List<Review> reviews = reviewDao.findByCourseId(courseId);
+        ctx.json(reviews);
+        ctx.status(200);
+      } catch (NumberFormatException e) {
+        List<Review> empty = new ArrayList<>();
+        ctx.json(empty);
+      } catch (Exception e) {
+        throw new ApiError("Something unexpected happened", 500 /*Internal error*/);
+      }
     });
   }
 
   private static void postReviewForCourse(ReviewDao reviewDao) {
     // client adds a review for a course (given its id) using HTTP POST request
     app.post("/courses/:id/reviews", ctx -> {
-      // TODO: implement me
+      Review review = ctx.bodyAsClass(Review.class);
+      try {
+        reviewDao.add(review);
+        ctx.status(201); // created successfully
+        ctx.json(review);
+      } catch (DaoException ex) {
+        throw new ApiError(ex.getMessage(), 500); // server internal error
+      }
     });
   }
 }
