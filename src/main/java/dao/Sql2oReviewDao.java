@@ -48,7 +48,7 @@ public class Sql2oReviewDao implements ReviewDao {
 
   @Override // worked on by Zach
   public List<Review> findByCourseId(int courseId) {
-    String sql = "SELECT * FROM Reviews WHERE courseId = :courseId;";
+    String sql = "SELECT * FROM Reviews WHERE courseID = :courseId;";
     try (Connection conn = sql2o.open()) {
       return conn.createQuery(sql)
               .addParameter("courseId", courseId)

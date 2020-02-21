@@ -1,6 +1,7 @@
 package api;
 
 import com.google.gson.Gson;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import dao.CourseDao;
 import dao.DaoFactory;
 import dao.DaoUtil;
@@ -108,13 +109,13 @@ public final class ApiServer {
         int courseId = Integer.parseInt(ctx.pathParam("id"));
         List<Review> reviews = reviewDao.findByCourseId(courseId);
         ctx.json(reviews);
-        ctx.status(200);
       } catch (NumberFormatException e) {
         List<Review> empty = new ArrayList<>();
         ctx.json(empty);
       } catch (Exception e) {
         throw new ApiError("Something unexpected happened", 500 /*Internal error*/);
       }
+      ctx.status(200);
     });
   }
 
@@ -123,9 +124,17 @@ public final class ApiServer {
     app.post("/courses/:id/reviews", ctx -> {
       Review review = ctx.bodyAsClass(Review.class);
       try {
+        int courseId = Integer.parseInt(ctx.pathParam("id"));
+
+        if(courseId != review.getCourseId()) {
+          throw new NumberFormatException("Mismatched ID");
+        }
+
         reviewDao.add(review);
         ctx.status(201); // created successfully
         ctx.json(review);
+      } catch (NumberFormatException ex) {
+        throw new ApiError(ex.getMessage(), 400 /*Request error*/); // server internal error
       } catch (DaoException ex) {
         throw new ApiError(ex.getMessage(), 500); // server internal error
       }

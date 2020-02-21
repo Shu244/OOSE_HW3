@@ -75,43 +75,62 @@ public class ApiServerTest {
 
   @Test
   public void getReviewsRequestReturns200() throws UnirestException {
-    // TODO: Implement me!
+    final String URL = "http://127.0.0.1:7000/courses/1/reviews";
+    HttpResponse<JsonNode> jsonResponse = Unirest.get(URL).asJson();
+    assertEquals(200, jsonResponse.getStatus());
   }
 
   @Test
   public void getReviewsRequestReturnsMultipleReviews() throws UnirestException {
-    // TODO: Implement me!
+    final String URL = "http://127.0.0.1:7000/courses/1/reviews";
+    HttpResponse<JsonNode> jsonResponse = Unirest.get(URL).asJson();
+    assertNotEquals(0, jsonResponse.getBody().getArray().length());
   }
 
   @Test
   public void getReviewsForNonExistingCourseReturnsEmptyList() throws UnirestException {
-    // TODO: Implement me!
+    final String URL = "http://127.0.0.1:7000/courses/1/reviews";
+    HttpResponse<JsonNode> jsonResponse = Unirest.get(URL).asJson();
+    assertNotEquals(0, jsonResponse.getBody().getArray().length());
   }
+
 
   @Test
   public void postReviewRequestReturns201() throws UnirestException {
-    // TODO: Implement me!
+    Map<String, Object> review = new HashMap<>();
+    review.put("courseId", 1);
+    review.put("rating", 1);
+    review.put("comment", "test");
+
+    final String URL = "http://127.0.0.1:7000/courses/1/reviews";
+    HttpResponse<JsonNode> jsonResponse = Unirest.post(URL)
+            .body(gson.toJson(review)).asJson();
+    assertEquals(201, jsonResponse.getStatus());
   }
 
   @Test
   public void postReviewMisMatchIDReturns400() throws UnirestException {
-    // E.g. try to post a review for course with id=1 but in the body of request
-    //  the courseId is some number other than 1
-    // TODO: Implement me!
+    Map<String, Object> review = new HashMap<>();
+    review.put("courseId", 2);
+    review.put("rating", 1);
+    review.put("comment", "test");
+
+    final String URL = "http://127.0.0.1:7000/courses/1/reviews";
+    HttpResponse<JsonNode> jsonResponse = Unirest.post(URL)
+            .body(gson.toJson(review)).asJson();
+    assertEquals(400, jsonResponse.getStatus());
   }
 
   @Test
   public void postReviewForNonExistingCourseReturns500() throws UnirestException {
-    // E.g. try to post a review for course that is not in the database
     Map<String, Object> review = new HashMap<>();
     review.put("courseId", 999);
-    review.put("rating", "Great");
-    review.put("comment", "Good class");
+    review.put("rating", 1);
+    review.put("comment", "test");
 
-    final String URL = "http://127.0.0.1:7000/courses/:id/reviews";
-    HttpResponse<JsonNode> jsonResponse = Unirest.post(URL)
-            .routeParam("id", "999")
+    final String URL1 = "http://127.0.0.1:7000/courses/999/reviews";
+    HttpResponse<JsonNode> jsonResponse1 = Unirest.post(URL1)
             .body(gson.toJson(review)).asJson();
-    assertEquals(500, jsonResponse.getStatus());
+    assertEquals(500, jsonResponse1.getStatus());
   }
 }
