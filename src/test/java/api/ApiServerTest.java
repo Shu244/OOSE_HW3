@@ -103,6 +103,15 @@ public class ApiServerTest {
   @Test
   public void postReviewForNonExistingCourseReturns500() throws UnirestException {
     // E.g. try to post a review for course that is not in the database
-    // TODO: Implement me!
+    Map<String, Object> review = new HashMap<>();
+    review.put("courseId", 999);
+    review.put("rating", "Great");
+    review.put("comment", "Good class");
+
+    final String URL = "http://127.0.0.1:7000/courses/:id/reviews";
+    HttpResponse<JsonNode> jsonResponse = Unirest.post(URL)
+            .routeParam("id", "999")
+            .body(gson.toJson(review)).asJson();
+    assertEquals(500, jsonResponse.getStatus());
   }
 }
