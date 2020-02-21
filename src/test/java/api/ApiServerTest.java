@@ -75,12 +75,16 @@ public class ApiServerTest {
 
   @Test
   public void getReviewsRequestReturns200() throws UnirestException {
-    // TODO: Implement me!
+    final String URL = "http://127.0.0.1:7000/reviews";
+    HttpResponse<JsonNode> jsonResponse = Unirest.get(URL).asJson();
+    assertEquals(200, jsonResponse.getStatus());
   }
 
   @Test
   public void getReviewsRequestReturnsMultipleReviews() throws UnirestException {
-    // TODO: Implement me!
+    final String URL = "http://127.0.0.1:7000/reviews";
+    HttpResponse<JsonNode> jsonResponse = Unirest.get(URL).asJson();
+    assertNotEquals(0, jsonResponse.getBody().getArray().length());
   }
 
   @Test
