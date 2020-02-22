@@ -75,6 +75,7 @@ public class ApiServerTest {
 
   @Test
   public void getReviewsRequestReturns200() throws UnirestException {
+    // Try to get the reviews with courseId 1.
     final String URL = "http://127.0.0.1:7000/courses/1/reviews";
     HttpResponse<JsonNode> jsonResponse = Unirest.get(URL).asJson();
     assertEquals(200, jsonResponse.getStatus());
@@ -89,9 +90,10 @@ public class ApiServerTest {
 
   @Test
   public void getReviewsForNonExistingCourseReturnsEmptyList() throws UnirestException {
-    final String URL = "http://127.0.0.1:7000/courses/1/reviews";
+    // A get request for a nonexistent course with id 999 should return an empty list
+    final String URL = "http://127.0.0.1:7000/courses/999/reviews";
     HttpResponse<JsonNode> jsonResponse = Unirest.get(URL).asJson();
-    assertNotEquals(0, jsonResponse.getBody().getArray().length());
+    assertEquals(0, jsonResponse.getBody().getArray().length());
   }
 
 
@@ -111,10 +113,12 @@ public class ApiServerTest {
   @Test
   public void postReviewMisMatchIDReturns400() throws UnirestException {
     Map<String, Object> review = new HashMap<>();
+    // The review courseId is 2
     review.put("courseId", 2);
     review.put("rating", 1);
     review.put("comment", "test");
 
+    // Mismatched id in post request, 2 != 1
     final String URL = "http://127.0.0.1:7000/courses/1/reviews";
     HttpResponse<JsonNode> jsonResponse = Unirest.post(URL)
             .body(gson.toJson(review)).asJson();
