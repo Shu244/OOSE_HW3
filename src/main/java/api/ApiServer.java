@@ -112,7 +112,9 @@ public final class ApiServer {
         List<Review> reviews = reviewDao.findByCourseId(courseId);
         ctx.json(reviews);
       } catch (NumberFormatException e) {
-        // If the number cannot be parsed, return an empty list
+        // If the number cannot be parsed, return an empty list.
+        // We chose not to throw an error since users
+        // can see nothing was retrieved.
         List<Review> empty = new ArrayList<>();
         ctx.json(empty);
       }
